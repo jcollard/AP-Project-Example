@@ -13,44 +13,43 @@ namespace AP_Project_Example
             Console.WriteLine("How many quotes would you like to generate?");
             string userInput = Console.ReadLine();
             int numQuotes = int.Parse(userInput);
-            GetQuotes(numQuotes);
-        }
-
-        public static string LoadQuote(string filename)
-        {
-            if (!File.Exists(filename)) throw new FileNotFoundException($"No such file {filename}.");
-            List<string> quotes = File.ReadAllLines(filename).ToList();
-            Random generator = new Random();
-            int index = generator.Next(0, quotes.Count);
-            return quotes[index];
+            int currQuote = 1;
+            while (currQuote <= numQuotes)
+            {
+                Console.Clear();
+                string quote = GenerateQuote("quotes.txt");
+                Console.WriteLine($"{currQuote}. {quote}");
+                currQuote = currQuote + 1;
+                Console.WriteLine("Press Enter To Continue...");
+                Console.ReadLine();
+            }
         }
 
         /// <summary>
-        /// Given a positive number of quotes to generate, displays a list of quotes.
+        /// Given a file containing Quotes, randomly generate a quote
+        /// from the list.
         /// </summary>
-        /// <param name="numQuotes">The number of quotes to generate</param>
-        public static void GetQuotes(int numQuotes)
+        /// <param name="filename">The file to select a quote from</param>
+        /// <returns>A string containing a quote</returns>
+        public static string GenerateQuote(string filename)
         {
-            // 1. Verify that the number of quotes to generate is positive.
-            // 2. If it not positive, throw an exception 
-            // 3. If we have no quotes left to generate, we are finished, exit the method
-            // 4. If there are more quotes to generate:
-            // 4 a. Generate a random quote
-            // 4 b. Display the random quote
-            // 4 c. Decrement the number of quotes left to generate
-            // 4 d. Go to step 3
-
-            if (numQuotes < 1)
+            // 1. Validate that the filename exists
+            // 2. If it does not exist, throw an exception
+            // 3. If it does exist:
+            // 4. Create a list to store the quotes
+            // 5. Iterate through the file adding each line to the list
+            // 6. Generate a random number between 0 and the size of the list
+            // 7. Use the randomly generated number as an index to select a quote
+            // 8. Return the selected quote
+            if (!File.Exists(filename)) throw new FileNotFoundException($"No such file {filename}.");
+            List<string> quotes = new List<string>();
+            foreach(string quote in File.ReadAllLines(filename))
             {
-                throw new ArgumentException("The number of quotes to generate must be at least 1.");
+                quotes.Add(quote);
             }
-
-            while (numQuotes > 0)
-            {
-                string quote = LoadQuote("quotes.txt");
-                Console.WriteLine($"{numQuotes}. {quote}");
-                numQuotes = numQuotes - 1;
-            }
+            Random generator = new Random();
+            int index = generator.Next(0, quotes.Count);
+            return quotes[index];
         }
     }
 }
